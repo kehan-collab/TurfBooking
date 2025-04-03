@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -12,13 +12,15 @@ const Login = () => {
 
     const handleSubmit = async () => {
         console.log("Submitting Login Data:", form); // 🔍 Debugging
-    
+
         try {
             const res = await axios.post("http://localhost:5000/auth/login", form);
-            const { token, role, hasTurf } = res.data;
-    
-            login(token, role);
-    
+            const { token, id, role, hasTurf } = res.data; // ✅ Now includes `id`
+
+            login(token, role, id); // ✅ Pass `id` to AuthContext or handle it
+
+            localStorage.setItem("userId", id); // ✅ Store `id` in local storage for future use
+
             if (role === "owner" && !hasTurf) {
                 navigate("/add-turf");
             } else {
@@ -29,7 +31,6 @@ const Login = () => {
             alert(error.response?.data?.error || "Login failed!");
         }
     };
-    
 
     return (
         <div>
